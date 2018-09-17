@@ -20,7 +20,6 @@ def request_pycurl(request):
     else:
         return "Invalid parameters!",500
     
-    result = ""
     buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, page)
