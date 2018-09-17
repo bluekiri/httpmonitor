@@ -2,6 +2,9 @@ import pycurl
 from flask import jsonify
 from io import BytesIO
 
+### GLOBALS ###
+timeout = 10
+
 def request_pycurl(request):
     """Http monitor.
     Args:
@@ -21,8 +24,15 @@ def request_pycurl(request):
     buffer = BytesIO()
     c = pycurl.Curl()
     c.setopt(c.URL, page)
+    c.setopt(pycurl.TIMEOUT, timeout)
     c.setopt(c.WRITEDATA, buffer)
-    c.perform()
+    try:
+    	c.perform()
+    except pycurl.error as e:
+        if e.args[0] == pycurl.E_COULDNT_CONNECT and c.exception:
+            return "Error!!!: " + str(c.exception), 500
+        else:
+            return "Error!!!: " + str(e), 500
     
     data = {}
     data['response_code'] = c.getinfo(c.RESPONSE_CODE)
